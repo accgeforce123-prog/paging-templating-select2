@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select2 - Paging và Templating</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .example { margin: 30px 0; padding: 20px; border: 1px solid #ddd; }
+        .select2-container { width: 100% !important; }
+        h3 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>Select2 - Paging và Templating</h1>
+
+    <!-- 1. PAGING - Phân trang dữ liệu lớn -->
+    <div class="example">
+        <h3>1. PAGING - Phân trang dữ liệu</h3>
+        <select id="paging-select" style="width: 400px;"></select>
+    </div>
+
+    <!-- 2. TEMPLATING - Tùy chỉnh hiển thị -->
+    <div class="example">
+        <h3>2. TEMPLATING - Tùy chỉnh hiển thị</h3>
+        <select id="template-select" style="width: 400px;"></select>
+    </div>
+    <div class="example">
+        <h3>3. Không có phân trang và templating</h3>
+        <select id="ms" style="width: 400px;">
+            <option value="">lựa chọn thứ 1</option>
+            <option value="">lựa chọn thứ 2</option>
+            <option value="">lựa chọn thứ 3</option>
+            <option value="">lựa chọn thứ 4</option>
+            <option value="">lựa chọn thứ 5</option>
+            <option value="">lựa chọn thứ 6</option>
+            <option value="">lựa chọn thứ 7</option>
+            <option value="">lựa chọn thứ 8</option>
+            <option value="">lựa chọn thứ 9</option>
+            <option value="">lựa chọn thứ 10</option>
+        </select>
+    </div>
+
+    <script>
+        $('#paging-select').select2({
+            ajax: {
+                url: 'https://api.github.com/search/users',
+                data: function (params) {
+                    return {
+                        q: params.term,          
+                        page: params.page || 1   
+                    };
+                },
+                processResults: function (data, params) {
+                    return {
+                        results: data.items.map(function(item) {
+                            return {
+                                id: item.id,
+                                text: item.login
+                            };
+                        }),
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                }
+            },      
+            minimumInputLength: 1
+        });
+
+
+
+
+        
+        // 2. TEMPLATING - Tùy chỉnh giao diện hiển thị
+        var templateData = [
+            { id: 1, text: 'John Doe', email: 'john@example.com', avatar: 'https://via.placeholder.com/32' },
+            { id: 2, text: 'Jane Smith', email: 'jane@example.com', avatar: 'https://via.placeholder.com/32' },
+            { id: 3, text: 'Bob Johnson', email: 'bob@example.com', avatar: 'https://via.placeholder.com/32' }
+        ];
+
+        $('#template-select').select2({
+            data: templateData,  // dữ liệu để test
+            
+            // templateResult: Bắt buộc - tùy chỉnh hiển thị trong dropdown
+            templateResult: function(item) {
+                // Tạo HTML cho mỗi item
+                var $container = $(
+                    '<div style="display: flex; align-items: center;">' +
+                        '<img src="' + item.avatar + '" style="width: 32px; height: 32px; margin-right: 10px;" />' +
+                        '<div>' + item.text + '<br><small>' + item.email + '</small></div>' +
+                    '</div>'
+                );
+                return $container;
+            }
+        });
+        // 3.Select bth
+        $(document).ready(function(){
+            $('#ms').select2();
+        })
+    </script>
+</body>
+</html>
